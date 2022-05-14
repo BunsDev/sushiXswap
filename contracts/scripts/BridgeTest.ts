@@ -55,6 +55,7 @@ USDC_STARGATE.set(97, "0xF49E250aEB5abDf660d643583AdFd0be41464EfD");
 XBENTO_BRIDGE.set(97, "0xB64a8cEc0b174e6B417A7b356017Ac4B98DDfA66");
 
 const DST_CHAINID = 80001;
+const STG_DST_CHAINID = 10009;
 const USER = "0xC1056bDFE993340326D2efADaCFDFd6Fab5Eb13c";
 
 async function main() {
@@ -64,9 +65,8 @@ async function main() {
   const ERC20 = await hre.ethers.getContractFactory("MockERC20");
   const usdc = await ERC20.attach(USDC_STARGATE.get(chainId));
   const testToken = await ERC20.attach(TEST_TOKEN.get(chainId));
-  
-  const bbs = XBridge.attach(XBENTO_BRIDGE.get(chainId));
 
+  const bbs = XBridge.attach(XBENTO_BRIDGE.get(chainId));
 
   // Deploy
   // const bbs = await XBridge.deploy(
@@ -100,109 +100,111 @@ async function main() {
   // );
 
   // Master Contract Approval
-  // console.log(await bbs.setBentoBoxApproval(
-  //     "0xC1056bDFE993340326D2efADaCFDFd6Fab5Eb13c",
-  //     true,
-  //     27,
-  //     "0x40a0b36776135bb9b7e286cdb4b23d09c3c868b67da54209525bfdfdec741ba2",
-  //     "0x0a744a6c4c4ade91300caa95fc7fc2277338008f03b98ee590e39a9a09ad6ec4"
-  // ))
+  console.log(
+    await bbs.setBentoBoxApproval(
+      USER,
+      true,
+      27,
+      "0x40a0b36776135bb9b7e286cdb4b23d09c3c868b67da54209525bfdfdec741ba2",
+      "0x0a744a6c4c4ade91300caa95fc7fc2277338008f03b98ee590e39a9a09ad6ec4"
+    )
+  );
 
-//   const depositToBentoBoxData = ethers.utils.defaultAbiCoder.encode(
-//     ["address", "address", "uint256", "uint256"],
-//     [TEST_TOKEN.get(chainId), USER, ethers.utils.parseEther("1000"), 0]
-//   );
+  //   const depositToBentoBoxData = ethers.utils.defaultAbiCoder.encode(
+  //     ["address", "address", "uint256", "uint256"],
+  //     [TEST_TOKEN.get(chainId), USER, ethers.utils.parseEther("1000"), 0]
+  //   );
 
-//   const transferBentoData = ethers.utils.defaultAbiCoder.encode(
-//     ["address", "address", "uint256", "uint256", "bool"],
-//     [
-//       TEST_TOKEN.get(chainId),
-//       PAIR_CONTRACT.get(chainId), // uniswap pair
-//       ethers.utils.parseEther("1000"),
-//       0,
-//       true,
-//     ]
-//   );
+  //   const transferBentoData = ethers.utils.defaultAbiCoder.encode(
+  //     ["address", "address", "uint256", "uint256", "bool"],
+  //     [
+  //       TEST_TOKEN.get(chainId),
+  //       PAIR_CONTRACT.get(chainId), // uniswap pair
+  //       ethers.utils.parseEther("1000"),
+  //       0,
+  //       true,
+  //     ]
+  //   );
 
-//   const legactSwapDataSrc = ethers.utils.defaultAbiCoder.encode(
-//     ["address", "bytes32", "uint256", "uint256", "address[]", "address"],
-//     [
-//       FACTORY_CONTRACT.get(chainId),
-//       PAIR_CODE_HASH.get(chainId),
-//       utils.parseEther("1000"),
-//       utils.parseUnits("10", 6),
-//       [TEST_TOKEN.get(chainId), USDC_STARGATE.get(chainId)],
-//       bbs.address,
-//     ]
-//   );
+  //   const legactSwapDataSrc = ethers.utils.defaultAbiCoder.encode(
+  //     ["address", "bytes32", "uint256", "uint256", "address[]", "address"],
+  //     [
+  //       FACTORY_CONTRACT.get(chainId),
+  //       PAIR_CODE_HASH.get(chainId),
+  //       utils.parseEther("1000"),
+  //       utils.parseUnits("10", 6),
+  //       [TEST_TOKEN.get(chainId), USDC_STARGATE.get(chainId)],
+  //       bbs.address,
+  //     ]
+  //   );
 
-//   const dstWithdrawData = ethers.utils.defaultAbiCoder.encode(
-//     ["address", "address", "uint256"],
-//     [
-//       USDC_STARGATE.get(DST_CHAINID),
-//       PAIR_CONTRACT.get(DST_CHAINID),
-//       utils.parseUnits("8", 6),
-//     ]
-//   );
+  //   const dstWithdrawData = ethers.utils.defaultAbiCoder.encode(
+  //     ["address", "address", "uint256"],
+  //     [
+  //       USDC_STARGATE.get(DST_CHAINID),
+  //       PAIR_CONTRACT.get(DST_CHAINID),
+  //       utils.parseUnits("8", 6),
+  //     ]
+  //   );
 
-//   const legactSwapDataDst = ethers.utils.defaultAbiCoder.encode(
-//     ["address", "bytes32", "uint256", "uint256", "address[]", "address"],
-//     [
-//       FACTORY_CONTRACT.get(DST_CHAINID),
-//       PAIR_CODE_HASH.get(DST_CHAINID),
-//       utils.parseUnits("8", 6),
-//       utils.parseEther("7"),
-//       [USDC_STARGATE.get(DST_CHAINID), TEST_TOKEN.get(DST_CHAINID)],
-//       USER,
-//     ]
-//   );
+  //   const legactSwapDataDst = ethers.utils.defaultAbiCoder.encode(
+  //     ["address", "bytes32", "uint256", "uint256", "address[]", "address"],
+  //     [
+  //       FACTORY_CONTRACT.get(DST_CHAINID),
+  //       PAIR_CODE_HASH.get(DST_CHAINID),
+  //       utils.parseUnits("8", 6),
+  //       utils.parseEther("7"),
+  //       [USDC_STARGATE.get(DST_CHAINID), TEST_TOKEN.get(DST_CHAINID)],
+  //       USER,
+  //     ]
+  //   );
 
-//   const teleportData = ethers.utils.defaultAbiCoder.encode(
-//     [
-//       "uint16",
-//       "address",
-//       "uint256",
-//       "uint256",
-//       "uint256",
-//       "uint256",
-//       "uint256",
-//       "address",
-//       "address",
-//       "uint256",
-//       "uint8[]",
-//       "uint256[]",
-//       "bytes[]",
-//     ],
-//     [
-//       10009,
-//       USDC_STARGATE.get(chainId),
-//       1,
-//       1,
-//       ethers.utils.parseUnits("10", 6),
-//       ethers.utils.parseUnits("9", 6),
-//       0,
-//       XBENTO_BRIDGE.get(DST_CHAINID),
-//       USER,
-//       500000,
-//       [3, 5],
-//       [0, 0],
-//       [dstWithdrawData, legactSwapDataDst],
-//     ]
-//   );
+  // const teleportData = ethers.utils.defaultAbiCoder.encode(
+  //   [
+  //     "uint16",
+  //     "address",
+  //     "uint256",
+  //     "uint256",
+  //     "uint256",
+  //     "uint256",
+  //     "uint256",
+  //     "address",
+  //     "address",
+  //     "uint256",
+  //     "uint8[]",
+  //     "uint256[]",
+  //     "bytes[]",
+  //   ],
+  //   [
+  //     STG_DST_CHAINID,
+  //     USDC_STARGATE.get(chainId),
+  //     1,
+  //     1,
+  //     ethers.utils.parseUnits("10", 6),
+  //     ethers.utils.parseUnits("9", 6),
+  //     0,
+  //     XBENTO_BRIDGE.get(DST_CHAINID),
+  //     USER,
+  //     500000,
+  //     [3, 5],
+  //     [0, 0],
+  //     [dstWithdrawData, legactSwapDataDst],
+  //   ]
+  // );
 
-//   console.log(
-//     await bbs.cook(
-//       [0, 1, 5, 4],
-//       [0, 0, 0, 0],
-//       [
-//         depositToBentoBoxData,
-//         transferBentoData,
-//         legactSwapDataSrc,
-//         teleportData,
-//       ],
-//       { value: ethers.utils.parseEther("0.01") }
-//     )
-//   );
+  //   console.log(
+  //     await bbs.cook(
+  //       [0, 1, 5, 4],
+  //       [0, 0, 0, 0],
+  //       [
+  //         depositToBentoBoxData,
+  //         transferBentoData,
+  //         legactSwapDataSrc,
+  //         teleportData,
+  //       ],
+  //       { value: ethers.utils.parseEther("0.01") }
+  //     )
+  //   );
 }
 
 main()

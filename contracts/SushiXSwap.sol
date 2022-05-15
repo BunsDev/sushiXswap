@@ -84,7 +84,11 @@ contract SushiXSwap is IStargateReceiver, BoringBatchable, SushiLegacy {
         address to,
         uint256 amount
     ) internal {
-        token.transfer(to, amount);
+        if (address(token) != address(0)) {
+            token.transfer(to, amount);
+        } else {
+            payable(to).transfer(amount);
+        }
     }
 
     function _teleport(
@@ -186,7 +190,11 @@ contract SushiXSwap is IStargateReceiver, BoringBatchable, SushiLegacy {
                     (address, address, uint256)
                 );
                 if (amount == 0) {
-                    amount = IERC20(token).balanceOf(address(this));
+                    if (token != address(0)) {
+                        amount = IERC20(token).balanceOf(address(this));
+                    } else {
+                        amount = address(this).balance;
+                    }
                 }
                 _transferTokens(IERC20(token), to, amount);
             } else if (action == TELEPORT) {

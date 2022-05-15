@@ -100,15 +100,15 @@ async function main() {
   // );
 
   // Master Contract Approval
-  console.log(
-    await bbs.setBentoBoxApproval(
-      USER,
-      true,
-      27,
-      "0x40a0b36776135bb9b7e286cdb4b23d09c3c868b67da54209525bfdfdec741ba2",
-      "0x0a744a6c4c4ade91300caa95fc7fc2277338008f03b98ee590e39a9a09ad6ec4"
-    )
-  );
+  //   console.log(
+  //     await bbs.setBentoBoxApproval(
+  //       USER,
+  //       true,
+  //       27,
+  //       "0x40a0b36776135bb9b7e286cdb4b23d09c3c868b67da54209525bfdfdec741ba2",
+  //       "0x0a744a6c4c4ade91300caa95fc7fc2277338008f03b98ee590e39a9a09ad6ec4"
+  //     )
+  //   );
 
   //   const depositToBentoBoxData = ethers.utils.defaultAbiCoder.encode(
   //     ["address", "address", "uint256", "uint256"],

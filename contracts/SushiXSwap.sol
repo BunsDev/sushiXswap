@@ -79,6 +79,14 @@ contract SushiXSwap is IStargateReceiver, BoringBatchable, SushiLegacy {
         }
     }
 
+    function _transferTokens(
+        IERC20 token,
+        address to,
+        uint256 amount
+    ) internal {
+        token.transfer(to, amount);
+    }
+
     function _teleport(
         TeleportParams memory params,
         uint8[] memory actions,
@@ -155,8 +163,7 @@ contract SushiXSwap is IStargateReceiver, BoringBatchable, SushiLegacy {
                 (address token, address to, uint256 amount, uint256 share) = abi
                     .decode(datas[i], (address, address, uint256, uint256));
 
-                // change to internal transfer function
-                IERC20(token).transfer(address(bentoBox), amount);
+                _transferTokens(IERC20(token), address(bentoBox), amount);
 
                 _depositToBentoBox(
                     token,
@@ -172,8 +179,7 @@ contract SushiXSwap is IStargateReceiver, BoringBatchable, SushiLegacy {
                     (address, address, uint256)
                 );
 
-                // change to internal transfer function
-                IERC20(token).transfer(to, amount);
+                _transferTokens(IERC20(token), to, amount);
             } else if (action == TELEPORT) {
                 (
                     TeleportParams memory params,

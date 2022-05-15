@@ -127,6 +127,7 @@ contract SushiXSwap is IStargateReceiver, BoringBatchable, SushiLegacy {
     uint8 constant LEGACY_SWAP = 5;
     uint8 constant TRIDENT_SWAP = 6;
     uint8 constant DST_WITHDRAW_BENTO = 7;
+    uint8 constant MASTER_CONTRACT_APPROVAL = 8;
 
     function cook(
         uint8[] memory actions,
@@ -136,7 +137,27 @@ contract SushiXSwap is IStargateReceiver, BoringBatchable, SushiLegacy {
         for (uint256 i = 0; i < actions.length; i++) {
             uint8 action = actions[i];
             // update for total amounts in contract?
-            if (action == SRC_DEPOSIT_TO_BENTOBOX) {
+            if (action == MASTER_CONTRACT_APPROVAL) {
+                (
+                    address user,
+                    bool approved,
+                    uint8 v,
+                    bytes32 r,
+                    bytes32 s
+                ) = abi.decode(
+                        datas[i],
+                        (address, bool, uint8, bytes32, bytes32)
+                    );
+
+                bentoBox.setMasterContractApproval(
+                    user,
+                    address(this),
+                    approved,
+                    v,
+                    r,
+                    s
+                );
+            } else if (action == SRC_DEPOSIT_TO_BENTOBOX) {
                 (address token, address to, uint256 amount, uint256 share) = abi
                     .decode(datas[i], (address, address, uint256, uint256));
                 _depositToBentoBox(

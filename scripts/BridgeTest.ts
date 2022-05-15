@@ -66,38 +66,38 @@ async function main() {
   const usdc = await ERC20.attach(USDC_STARGATE.get(chainId));
   const testToken = await ERC20.attach(TEST_TOKEN.get(chainId));
 
-  const bbs = XBridge.attach(XBENTO_BRIDGE.get(chainId));
+  // const bbs = XBridge.attach(XBENTO_BRIDGE.get(chainId));
 
   // Deploy
-  // const bbs = await XBridge.deploy(
-  //   BENTO_ADDRESS.get(chainId),
-  //   STARGATE_ROUTER_ADDRESS.get(chainId)
-  // );
-  // await bbs.deployed();
-  // console.log(bbs.address);
+  const bbs = await XBridge.deploy(
+    BENTO_ADDRESS.get(chainId),
+    STARGATE_ROUTER_ADDRESS.get(chainId)
+  );
+  await bbs.deployed();
+  console.log(bbs.address);
 
   // Approve to Stargate
-  // console.log(await bbs.approveToStargateRouter(usdc.address));
+  console.log(await bbs.approveToStargateRouter(usdc.address));
 
   // Approve USDC
-  // console.log(
-  //   await usdc.approve(
-  //     XBENTO_BRIDGE.get(chainId),
-  //     utils.parseEther("1000000000000000")
-  //   )
-  // );
-  // console.log(
-  //   await usdc.approve(
-  //     BENTO_ADDRESS.get(chainId),
-  //     utils.parseEther("1000000000000000")
-  //   )
-  // );
-  // console.log(
-  //   await testToken.approve(
-  //     BENTO_ADDRESS.get(chainId),
-  //     utils.parseEther("10000000000000000")
-  //   )
-  // );
+  console.log(
+    await usdc.approve(
+      XBENTO_BRIDGE.get(chainId),
+      utils.parseEther("1000000000000000")
+    )
+  );
+  console.log(
+    await usdc.approve(
+      BENTO_ADDRESS.get(chainId),
+      utils.parseEther("1000000000000000")
+    )
+  );
+  console.log(
+    await testToken.approve(
+      BENTO_ADDRESS.get(chainId),
+      utils.parseEther("10000000000000000")
+    )
+  );
 
   // Master Contract Approval
   //   console.log(

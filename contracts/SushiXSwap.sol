@@ -126,6 +126,7 @@ contract SushiXSwap is IStargateReceiver, BoringBatchable, SushiLegacy {
     uint8 constant TELEPORT = 4;
     uint8 constant LEGACY_SWAP = 5;
     uint8 constant TRIDENT_SWAP = 6;
+    uint8 constant DST_WITHDRAW_BENTO = 7;
 
     function cook(
         uint8[] memory actions,
@@ -197,6 +198,28 @@ contract SushiXSwap is IStargateReceiver, BoringBatchable, SushiLegacy {
                     }
                 }
                 _transferTokens(IERC20(token), to, amount);
+            } else if (action == DST_WITHDRAW_BENTO) {
+                (
+                    address token,
+                    address to,
+                    uint256 amount,
+                    uint256 share,
+                    bool unwrapBento
+                ) = abi.decode(
+                        datas[i],
+                        (address, address, uint256, uint256, bool)
+                    );
+                if (amount == 0) {
+                    amount = IERC20(token).balanceOf(address(this));
+                }
+                _transferFromBentoBox(
+                    token,
+                    address(this),
+                    to,
+                    amount,
+                    share,
+                    unwrapBento
+                );
             } else if (action == TELEPORT) {
                 (
                     TeleportParams memory params,

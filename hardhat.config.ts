@@ -109,6 +109,27 @@ const config: HardhatUserConfig = {
       saveDeployments: true,
       tags: ["staging"],
     },
+    rinkeby: {
+      url: `https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161`,
+      accounts,
+      chainId: 4,
+      gasMultiplier: 10,
+    },
+    bsctestnet: {
+      url: `https://data-seed-prebsc-1-s1.binance.org:8545`,
+      accounts,
+      chainId: 97,
+    },
+    fuji: {
+      url: `https://api.avax-test.network/ext/bc/C/rpc`,
+      accounts,
+      chainId: 43113,
+    },
+    mumbai: {
+      url: `https://rpc-mumbai.maticvigil.com`,
+      accounts,
+      chainId: 80001,
+    },
   },
   preprocess: {
     eachLine: removeConsoleLog(

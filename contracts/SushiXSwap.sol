@@ -95,13 +95,21 @@ contract SushiXSwap is IStargateReceiver, BoringBatchable, SushiLegacy {
     ) internal {
         bytes memory payload = abi.encode(params.to, actions, values, datas);
 
+        uint256 amount = params.amount;
+        uint256 amountMin = params.amountMin;
+
+        if (params.amount == 0) {
+            amount = IERC20(params.token).balanceOf(address(this));
+            amountMin = amount - ((amount * 10) / 1000);
+        }
+
         stargateRouter.swap{value: address(this).balance}(
             params.dstChainId,
             params.srcPoolId,
             params.dstPoolId,
             payable(msg.sender),
-            params.amount,
-            params.amountMin,
+            amount,
+            amountMin,
             IStargateRouter.lzTxObj(
                 params.gas,
                 params.dustAmount,

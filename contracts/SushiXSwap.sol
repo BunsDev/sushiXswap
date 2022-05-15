@@ -171,6 +171,11 @@ contract SushiXSwap is IStargateReceiver, BoringBatchable, SushiLegacy {
                 (address token, address to, uint256 amount, uint256 share) = abi
                     .decode(datas[i], (address, address, uint256, uint256));
 
+                if (amount == 0) {
+                    amount = IERC20(token).balanceOf(address(this));
+                    // left values not updates intentionally
+                }
+
                 _transferTokens(IERC20(token), address(bentoBox), amount);
 
                 _depositToBentoBox(
@@ -186,7 +191,9 @@ contract SushiXSwap is IStargateReceiver, BoringBatchable, SushiLegacy {
                     datas[i],
                     (address, address, uint256)
                 );
-
+                if (amount == 0) {
+                    amount = IERC20(token).balanceOf(address(this));
+                }
                 _transferTokens(IERC20(token), to, amount);
             } else if (action == TELEPORT) {
                 (
@@ -212,6 +219,10 @@ contract SushiXSwap is IStargateReceiver, BoringBatchable, SushiLegacy {
                         datas[i],
                         (address, bytes32, uint256, uint256, address[], address)
                     );
+
+                if (amountIn == 0) {
+                    amountIn = IERC20(path[0]).balanceOf(address(this));
+                }
 
                 _swapExactTokensForTokens(
                     factory,

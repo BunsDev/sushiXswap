@@ -8,8 +8,14 @@ import "./interfaces/IStargateRouter.sol";
 import "./interfaces/IStargateReceiver.sol";
 import "./utils/BoringBatchable.sol";
 import "./adapters/SushiLegacy.sol";
+import "./adapters/TridentSwap.sol";
 
-contract SushiXSwap is IStargateReceiver, BoringBatchable, SushiLegacy {
+contract SushiXSwap is
+    IStargateReceiver,
+    BoringBatchable,
+    SushiLegacy,
+    TridentSwap
+{
     struct TeleportParams {
         uint16 dstChainId;
         address token;
@@ -278,6 +284,13 @@ contract SushiXSwap is IStargateReceiver, BoringBatchable, SushiLegacy {
                     path,
                     to
                 );
+            } else if (action == TRIDENT_SWAP) {
+                (ExactInputParams memory params, bool payToPool) = abi.decode(
+                    datas[i],
+                    (ExactInputParams, bool)
+                );
+
+                _exactInput(bentoBox, params, address(this), payToPool);
             }
         }
     }

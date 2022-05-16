@@ -15,10 +15,9 @@ contract TridentSwap is ITridentRouter {
     function _exactInput(
         IBentoBoxMinimal bento,
         ExactInputParams memory params,
-        address from,
-        bool payToPool
+        address from
     ) internal returns (uint256 amountOut) {
-        if (payToPool) {
+        if (params.amountIn == 0) {
             // Pay the first pool directly.
             params.amountIn = IERC20(params.tokenIn).balanceOf(address(this));
 

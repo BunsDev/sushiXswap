@@ -285,12 +285,12 @@ contract SushiXSwap is
                     to
                 );
             } else if (action == TRIDENT_SWAP) {
-                (ExactInputParams memory params, bool payToPool) = abi.decode(
+                ExactInputParams memory params = abi.decode(
                     datas[i],
-                    (ExactInputParams, bool)
+                    (ExactInputParams)
                 );
 
-                _exactInput(bentoBox, params, address(this), payToPool);
+                _exactInput(bentoBox, params, address(this));
             }
         }
     }

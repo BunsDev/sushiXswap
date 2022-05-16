@@ -14,7 +14,8 @@ contract SushiLegacy {
         uint256 amountIn,
         uint256 amountOutMin,
         address[] memory path,
-        address to
+        address to,
+        bool sendTokens
     ) internal returns (uint256 amountOut) {
         uint256[] memory amounts = UniswapV2Library.getAmountsOut(
             factory,
@@ -23,13 +24,26 @@ contract SushiLegacy {
             pairCodeHash
         );
         amountOut = amounts[amounts.length - 1];
+
         require(amountOut >= amountOutMin, "insufficient-amount-out");
+
+        if (sendTokens) {
+            IERC20(path[0]).safeTransfer(
+                UniswapV2Library.pairFor(
+                    factory,
+                    path[0],
+                    path[1],
+                    pairCodeHash
+                ),
+                IERC20(path[0]).balanceOf(address(this))
+            );
+        }
         _swap(factory, pairCodeHash, amounts, path, to);
     }
 
     // requires the initial amount to have already been sent to the first pair
     function _swap(
-        address factory, 
+        address factory,
         bytes32 pairCodeHash,
         uint256[] memory amounts,
         address[] memory path,

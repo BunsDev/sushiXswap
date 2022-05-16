@@ -271,18 +271,19 @@ contract SushiXSwap is
                         datas[i],
                         (address, bytes32, uint256, uint256, address[], address)
                     );
-
+                bool sendTokens;
                 if (amountIn == 0) {
-                    amountIn = IERC20(path[0]).balanceOf(address(this));
+                    IERC20(path[0]).balanceOf(address(this));
+                    sendTokens = true;
                 }
-
                 _swapExactTokensForTokens(
                     factory,
                     pairCodeHash,
                     amountIn,
                     amountOutMin,
                     path,
-                    to
+                    to,
+                    sendTokens
                 );
             } else if (action == TRIDENT_SWAP) {
                 ExactInputParams memory params = abi.decode(

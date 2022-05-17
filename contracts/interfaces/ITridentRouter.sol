@@ -2,6 +2,10 @@
 
 pragma solidity 0.8.11;
 
+import "../interfaces/IPool.sol";
+import "../interfaces/IBentoBoxMinimal.sol";
+import "@openzeppelin/contracts/interfaces/IERC20.sol";
+
 /// @notice Trident pool router interface.
 interface ITridentRouter {
     struct Path {

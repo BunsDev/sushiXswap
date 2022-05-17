@@ -4,13 +4,12 @@ pragma solidity 0.8.11;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "../libraries/UniswapV2Library.sol";
+import "../base/ImmutableState.sol";
 
-contract SushiLegacy {
+abstract contract SushiLegacy is ImmutableState {
     using SafeERC20 for IERC20;
 
     function _swapExactTokensForTokens(
-        address factory,
-        bytes32 pairCodeHash,
         uint256 amountIn,
         uint256 amountOutMin,
         address[] memory path,
@@ -38,13 +37,11 @@ contract SushiLegacy {
                 IERC20(path[0]).balanceOf(address(this))
             );
         }
-        _swap(factory, pairCodeHash, amounts, path, to);
+        _swap(amounts, path, to);
     }
 
     // requires the initial amount to have already been sent to the first pair
     function _swap(
-        address factory,
-        bytes32 pairCodeHash,
         uint256[] memory amounts,
         address[] memory path,
         address _to

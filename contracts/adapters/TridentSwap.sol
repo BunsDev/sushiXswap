@@ -3,11 +3,8 @@
 pragma solidity 0.8.11;
 
 import "../interfaces/ITridentRouter.sol";
-import "../interfaces/IPool.sol";
-import "../interfaces/IBentoBoxMinimal.sol";
-import "@openzeppelin/contracts/interfaces/IERC20.sol";
 
-contract TridentSwap is ITridentRouter {
+abstract contract TridentSwap is ITridentRouter {
     // Custom Error
 
     error TooLittleReceived();

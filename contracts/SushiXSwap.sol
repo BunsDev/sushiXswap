@@ -2,126 +2,23 @@
 
 pragma solidity 0.8.11;
 
-import "@openzeppelin/contracts/interfaces/IERC20.sol";
-import "./interfaces/IBentoBoxMinimal.sol";
-import "./interfaces/IStargateRouter.sol";
-import "./interfaces/IStargateReceiver.sol";
-import "./utils/BoringBatchable.sol";
-import "./adapters/SushiLegacy.sol";
-import "./adapters/TridentSwap.sol";
+import "./interfaces/ISushiXSwap.sol";
 
 contract SushiXSwap is
-    IStargateReceiver,
-    BoringBatchable,
+    ISushiXSwap,
+    BentoOperations,
+    TokenOperations,
     SushiLegacy,
-    TridentSwap
+    TridentSwap,
+    Stargate
 {
-    struct TeleportParams {
-        uint16 dstChainId;
-        address token;
-        uint256 srcPoolId;
-        uint256 dstPoolId;
-        uint256 amount;
-        uint256 amountMin;
-        uint256 dustAmount;
-        address receiver;
-        address to;
-        uint256 gas;
-    }
-
-    IBentoBoxMinimal public immutable bentoBox;
-    IStargateRouter public immutable stargateRouter;
-
-    constructor(IBentoBoxMinimal _bentoBox, IStargateRouter _stargateRouter) {
-        stargateRouter = _stargateRouter;
-        bentoBox = _bentoBox;
+    constructor(
+        IBentoBoxMinimal _bentoBox,
+        IStargateRouter _stargateRouter,
+        address _factory,
+        bytes32 _pairCodeHash
+    ) ImmutableState(_bentoBox, _stargateRouter, _factory, _pairCodeHash) {
         _bentoBox.registerProtocol();
-    }
-
-    function setBentoBoxApproval(
-        address user,
-        bool approved,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external {
-        bentoBox.setMasterContractApproval(
-            user,
-            address(this),
-            approved,
-            v,
-            r,
-            s
-        );
-    }
-
-    function approveToStargateRouter(IERC20 token) external {
-        token.approve(address(stargateRouter), type(uint256).max);
-    }
-
-    function _depositToBentoBox(
-        address token,
-        address from,
-        address to,
-        uint256 amount,
-        uint256 share,
-        uint256 value
-    ) internal {
-        bentoBox.deposit{value: value}(token, from, to, amount, share);
-    }
-
-    function _transferFromBentoBox(
-        address token,
-        address from,
-        address to,
-        uint256 amount,
-        uint256 share,
-        bool unwrapBento
-    ) internal {
-        if (unwrapBento) {
-            bentoBox.withdraw(token, from, to, amount, share);
-        } else {
-            bentoBox.transfer(token, from, to, share);
-        }
-    }
-
-    function _transferTokens(
-        IERC20 token,
-        address to,
-        uint256 amount
-    ) internal {
-        if (address(token) != address(0)) {
-            token.transfer(to, amount);
-        } else {
-            payable(to).transfer(amount);
-        }
-    }
-
-    function _teleport(
-        TeleportParams memory params,
-        uint8[] memory actions,
-        uint256[] memory values,
-        bytes[] memory datas
-    ) internal {
-        bytes memory payload = abi.encode(params.to, actions, values, datas);
-
-        stargateRouter.swap{value: address(this).balance}(
-            params.dstChainId,
-            params.srcPoolId,
-            params.dstPoolId,
-            payable(msg.sender),
-            params.amount != 0
-                ? params.amount
-                : IERC20(params.token).balanceOf(address(this)),
-            params.amountMin,
-            IStargateRouter.lzTxObj(
-                params.gas,
-                params.dustAmount,
-                abi.encodePacked(params.receiver)
-            ),
-            abi.encodePacked(params.receiver),
-            payload
-        );
     }
 
     // ACTION_LIST
@@ -139,7 +36,7 @@ contract SushiXSwap is
         uint8[] memory actions,
         uint256[] memory values,
         bytes[] memory datas
-    ) public payable {
+    ) public payable override {
         for (uint256 i = 0; i < actions.length; i++) {
             uint8 action = actions[i];
             // update for total amounts in contract?
@@ -261,15 +158,13 @@ contract SushiXSwap is
                 _teleport(params, actionsDST, valuesDST, datasDST);
             } else if (action == LEGACY_SWAP) {
                 (
-                    address factory,
-                    bytes32 pairCodeHash,
                     uint256 amountIn,
                     uint256 amountOutMin,
                     address[] memory path,
                     address to
                 ) = abi.decode(
                         datas[i],
-                        (address, bytes32, uint256, uint256, address[], address)
+                        (uint256, uint256, address[], address)
                     );
                 bool sendTokens;
                 if (amountIn == 0) {
@@ -277,8 +172,6 @@ contract SushiXSwap is
                     sendTokens = true;
                 }
                 _swapExactTokensForTokens(
-                    factory,
-                    pairCodeHash,
                     amountIn,
                     amountOutMin,
                     path,
@@ -297,13 +190,13 @@ contract SushiXSwap is
     }
 
     function sgReceive(
-        uint16 _chainId,
-        bytes memory _srcAddress,
-        uint256 _nonce,
+        uint16,
+        bytes memory,
+        uint256,
         address _token,
         uint256 amountLD,
         bytes memory payload
-    ) external override {
+    ) external {
         require(
             msg.sender == address(stargateRouter),
             "Caller not Stargate Router"
@@ -316,12 +209,10 @@ contract SushiXSwap is
             bytes[] memory datas
         ) = abi.decode(payload, (address, uint8[], uint256[], bytes[]));
 
-        try SushiXSwap(payable(this)).cook(actions, values, datas) {} catch (
-            bytes memory
-        ) {
+        try
+            ISushiXSwap(payable(address(this))).cook(actions, values, datas)
+        {} catch (bytes memory) {
             IERC20(_token).transfer(to, amountLD);
         }
     }
-
-    receive() external payable {}
 }

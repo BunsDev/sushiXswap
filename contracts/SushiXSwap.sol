@@ -184,7 +184,7 @@ contract SushiXSwap is
                     (ExactInputParams)
                 );
 
-                _exactInput(bentoBox, params, address(this));
+                _exactInput(params, address(this));
             }
         }
     }

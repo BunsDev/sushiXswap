@@ -16,7 +16,6 @@ abstract contract TridentSwap is
     error TooLittleReceived();
 
     function _exactInput(
-        IBentoBoxMinimal bento,
         ExactInputParams memory params,
         address from
     ) internal returns (uint256 amountOut) {
@@ -24,7 +23,7 @@ abstract contract TridentSwap is
             // Pay the first pool directly.
             params.amountIn = IERC20(params.tokenIn).balanceOf(address(this));
 
-            bento.transfer(
+            bentoBox.transfer(
                 params.tokenIn,
                 from,
                 params.path[0].pool,

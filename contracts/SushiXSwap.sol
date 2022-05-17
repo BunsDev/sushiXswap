@@ -273,7 +273,7 @@ contract SushiXSwap is
                     );
                 bool sendTokens;
                 if (amountIn == 0) {
-                    IERC20(path[0]).balanceOf(address(this));
+                    amountIn = IERC20(path[0]).balanceOf(address(this));
                     sendTokens = true;
                 }
                 _swapExactTokensForTokens(

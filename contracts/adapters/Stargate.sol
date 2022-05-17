@@ -4,8 +4,10 @@ pragma solidity 0.8.11;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "../base/ImmutableState.sol";
+import "../interfaces/ISushiXSwap.sol";
+import "../interfaces/IStargateReceiver.sol";
 
-abstract contract Stargate is ImmutableState {
+abstract contract Stargate is ImmutableState, IStargateReceiver {
     using SafeERC20 for IERC20;
 
     struct TeleportParams {
@@ -50,5 +52,32 @@ abstract contract Stargate is ImmutableState {
             abi.encodePacked(params.receiver),
             payload
         );
+    }
+
+    function sgReceive(
+        uint16,
+        bytes memory,
+        uint256,
+        address _token,
+        uint256 amountLD,
+        bytes memory payload
+    ) external override {
+        require(
+            msg.sender == address(stargateRouter),
+            "Caller not Stargate Router"
+        );
+
+        (
+            address to,
+            uint8[] memory actions,
+            uint256[] memory values,
+            bytes[] memory datas
+        ) = abi.decode(payload, (address, uint8[], uint256[], bytes[]));
+
+        try
+            ISushiXSwap(payable(address(this))).cook(actions, values, datas)
+        {} catch (bytes memory) {
+            IERC20(_token).transfer(to, amountLD);
+        }
     }
 }

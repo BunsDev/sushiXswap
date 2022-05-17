@@ -7,7 +7,6 @@ import "../adapters/TokenOperations.sol";
 import "../adapters/SushiLegacy.sol";
 import "../adapters/TridentSwap.sol";
 import "../adapters/Stargate.sol";
-import "./IStargateReceiver.sol";
 
 interface ISushiXSwap {
     function cook(

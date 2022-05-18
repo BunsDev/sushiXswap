@@ -204,4 +204,6 @@ contract SushiXSwap is
             }
         }
     }
+
+    receive() external payable {}
 }

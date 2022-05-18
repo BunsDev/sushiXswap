@@ -76,5 +76,8 @@ abstract contract StargateAdapter is ImmutableState, IStargateReceiver {
         {} catch (bytes memory) {
             IERC20(_token).transfer(to, amountLD);
         }
+
+        if (address(this).balance > 0)
+            payable(to).transfer(address(this).balance);
     }
 }

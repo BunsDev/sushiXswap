@@ -2,10 +2,10 @@
 
 pragma solidity 0.8.11;
 
-import "../adapters/BentoOperations.sol";
+import "../adapters/BentoAdapter.sol";
 import "../adapters/TokenOperations.sol";
 import "../adapters/SushiLegacy.sol";
-import "../adapters/TridentSwap.sol";
+import "../adapters/TridentSwapAdapter.sol";
 import "../adapters/Stargate.sol";
 
 interface ISushiXSwap {

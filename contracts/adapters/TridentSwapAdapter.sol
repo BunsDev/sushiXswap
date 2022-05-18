@@ -2,9 +2,7 @@
 
 pragma solidity 0.8.11;
 
-import "../interfaces/ITridentRouter.sol";
-import "./BentoOperations.sol";
-import "../base/ImmutableState.sol";
+import "../interfaces/trident/ITridentSwapAdapter.sol";
 
 abstract contract TridentSwap is
     ITridentRouter,

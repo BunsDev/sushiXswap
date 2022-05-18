@@ -27,7 +27,7 @@ contract SushiXSwap is
     uint8 constant SRC_TRANSFER_FROM_BENTOBOX = 2;
     uint8 constant DST_DEPOSIT_TO_BENTOBOX = 3;
     uint8 constant DST_WITHDRAW_TOKEN = 4;
-    uint8 constant DST_WITHDRAW_BENTO = 5;
+    uint8 constant DST_WITHDRAW_FROM_BENTOBOX = 5;
     uint8 constant UNWRAP_AND_TRANSFER = 6;
     uint8 constant LEGACY_SWAP = 7;
     uint8 constant TRIDENT_SWAP = 8;
@@ -124,7 +124,7 @@ contract SushiXSwap is
                     }
                 }
                 _transferTokens(IERC20(token), to, amount);
-            } else if (action == DST_WITHDRAW_BENTO) {
+            } else if (action == DST_WITHDRAW_FROM_BENTOBOX) {
                 (
                     address token,
                     address to,

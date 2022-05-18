@@ -3,6 +3,7 @@
 pragma solidity 0.8.11;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "../interfaces/IWETH.sol";
 
 abstract contract TokenAdapter {
     using SafeERC20 for IERC20;
@@ -17,5 +18,10 @@ abstract contract TokenAdapter {
         } else {
             payable(to).transfer(amount);
         }
+    }
+
+    function unwrapTransfer(address token, address to) internal {
+        IWETH(token).withdraw(IERC20(token).balanceOf(address(this)));
+        _transferTokens(IERC20(address(0)), to, address(this).balance);
     }
 }

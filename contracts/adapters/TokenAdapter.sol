@@ -20,7 +20,7 @@ abstract contract TokenAdapter {
         }
     }
 
-    function unwrapTransfer(address token, address to) internal {
+    function _unwrapTransfer(address token, address to) internal {
         IWETH(token).withdraw(IERC20(token).balanceOf(address(this)));
         _transferTokens(IERC20(address(0)), to, address(this).balance);
     }

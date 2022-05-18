@@ -22,15 +22,17 @@ contract SushiXSwap is
     }
 
     // ACTION_LIST
-    uint8 constant SRC_DEPOSIT_TO_BENTOBOX = 0;
-    uint8 constant SRC_TRANSFER_FROM_BENTOBOX = 1;
-    uint8 constant DST_DEPOSIT_TO_BENTOBOX = 2;
-    uint8 constant DST_WITHDRAW_TOKEN = 3;
-    uint8 constant TELEPORT = 4;
-    uint8 constant LEGACY_SWAP = 5;
-    uint8 constant TRIDENT_SWAP = 6;
-    uint8 constant DST_WITHDRAW_BENTO = 7;
-    uint8 constant MASTER_CONTRACT_APPROVAL = 8;
+    uint8 constant MASTER_CONTRACT_APPROVAL = 0;
+    uint8 constant SRC_DEPOSIT_TO_BENTOBOX = 1;
+    uint8 constant SRC_TRANSFER_FROM_BENTOBOX = 2;
+    uint8 constant DST_DEPOSIT_TO_BENTOBOX = 3;
+    uint8 constant DST_WITHDRAW_TOKEN = 4;
+    uint8 constant DST_WITHDRAW_BENTO = 5;
+    uint8 constant UNWRAP_AND_TRANSFER = 6;
+    uint8 constant LEGACY_SWAP = 7;
+    uint8 constant TRIDENT_SWAP = 8;
+    uint8 constant TRIDENT_COMPLEX_PATH_SWAP = 9;
+    uint8 constant STARGATE_TELEPORT = 10;
 
     function cook(
         uint8[] memory actions,
@@ -144,18 +146,13 @@ contract SushiXSwap is
                     share,
                     unwrapBento
                 );
-            } else if (action == TELEPORT) {
-                (
-                    TeleportParams memory params,
-                    uint8[] memory actionsDST,
-                    uint256[] memory valuesDST,
-                    bytes[] memory datasDST
-                ) = abi.decode(
-                        datas[i],
-                        (TeleportParams, uint8[], uint256[], bytes[])
-                    );
+            } else if (action == UNWRAP_AND_TRANSFER) {
+                (address token, address to) = abi.decode(
+                    datas[i],
+                    (address, address)
+                );
 
-                _teleport(params, actionsDST, valuesDST, datasDST);
+                _unwrapTransfer(token, to);
             } else if (action == LEGACY_SWAP) {
                 (
                     uint256 amountIn,
@@ -185,6 +182,20 @@ contract SushiXSwap is
                 );
 
                 _exactInput(params, address(this));
+            } else if (action == TRIDENT_COMPLEX_PATH_SWAP) {
+                // todo
+            } else if (action == STARGATE_TELEPORT) {
+                (
+                    TeleportParams memory params,
+                    uint8[] memory actionsDST,
+                    uint256[] memory valuesDST,
+                    bytes[] memory datasDST
+                ) = abi.decode(
+                        datas[i],
+                        (TeleportParams, uint8[], uint256[], bytes[])
+                    );
+
+                _stargateTeleport(params, actionsDST, valuesDST, datasDST);
             }
         }
     }

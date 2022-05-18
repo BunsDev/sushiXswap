@@ -24,7 +24,7 @@ abstract contract StargateAdapter is ImmutableState, IStargateReceiver {
         token.safeApprove(address(stargateRouter), type(uint256).max);
     }
 
-    function _teleport(
+    function _stargateTeleport(
         TeleportParams memory params,
         uint8[] memory actions,
         uint256[] memory values,

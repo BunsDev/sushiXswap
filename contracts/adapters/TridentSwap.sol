@@ -48,23 +48,13 @@ abstract contract TridentSwap is
         // Input tokens come from the user - output goes to following pools.
         uint256 n = params.initialPath.length;
         for (uint256 i = 0; i < n; i = _increment(i)) {
-            if (params.initialPath[i].native) {
-                _depositToBentoBox(
-                    params.initialPath[i].tokenIn,
-                    address(this),
-                    params.initialPath[i].pool,
-                    params.initialPath[i].amount,
-                    0,
-                    params.initialPath[i].amount
-                );
-            } else {
-                bentoBox.transfer(
-                    params.initialPath[i].tokenIn,
-                    msg.sender,
-                    params.initialPath[i].pool,
-                    params.initialPath[i].amount
-                );
-            }
+            bentoBox.transfer(
+                params.initialPath[i].tokenIn,
+                address(this),
+                params.initialPath[i].pool,
+                params.initialPath[i].amount
+            );
+
             IPool(params.initialPath[i].pool).swap(params.initialPath[i].data);
         }
         // Do all the middle swaps. Input comes from previous pools.

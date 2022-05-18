@@ -2,12 +2,9 @@
 
 pragma solidity 0.8.11;
 
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "../base/ImmutableState.sol";
-import "../interfaces/ISushiXSwap.sol";
-import "../interfaces/IStargateReceiver.sol";
+import "../interfaces/stargate/IStargateAdapter.sol";
 
-abstract contract Stargate is ImmutableState, IStargateReceiver {
+abstract contract StargateAdapter is ImmutableState, IStargateReceiver {
     using SafeERC20 for IERC20;
 
     struct TeleportParams {

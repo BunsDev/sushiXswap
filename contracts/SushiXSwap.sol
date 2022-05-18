@@ -6,11 +6,11 @@ import "./interfaces/ISushiXSwap.sol";
 
 contract SushiXSwap is
     ISushiXSwap,
-    BentoOperations,
-    TokenOperations,
-    SushiLegacy,
-    TridentSwap,
-    Stargate
+    BentoAdapter,
+    TokenAdapter,
+    SushiLegacyAdapter,
+    TridentSwapAdapter,
+    StargateAdapter
 {
     constructor(
         IBentoBoxMinimal _bentoBox,

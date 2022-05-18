@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "../libraries/UniswapV2Library.sol";
 import "../base/ImmutableState.sol";
 
-abstract contract SushiLegacy is ImmutableState {
+abstract contract SushiLegacyAdapter is ImmutableState {
     using SafeERC20 for IERC20;
 
     function _swapExactTokensForTokens(

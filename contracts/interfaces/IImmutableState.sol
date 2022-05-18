@@ -3,7 +3,7 @@
 pragma solidity 0.8.11;
 
 import "./IBentoBoxMinimal.sol";
-import "./IStargateRouter.sol";
+import "./stargate/IStargateRouter.sol";
 
 interface IImmutableState {
     function bentoBox() external view returns (IBentoBoxMinimal);

@@ -4,11 +4,15 @@ pragma solidity 0.8.11;
 
 import "../interfaces/trident/ITridentSwapAdapter.sol";
 
-abstract contract TridentSwapAdapter is ITridentRouter, ImmutableState, BentoAdapter {
+abstract contract TridentSwapAdapter is
+    ITridentRouter,
+    ImmutableState,
+    BentoAdapter
+{
     // Custom Error
     error TooLittleReceived();
 
-    function _exactInput(ExactInputParams memory params, address from)
+    function _exactInput(ExactInputParams memory params)
         internal
         returns (uint256 amountOut)
     {
@@ -16,7 +20,7 @@ abstract contract TridentSwapAdapter is ITridentRouter, ImmutableState, BentoAda
             // Pay the first pool directly.
             (, params.amountIn) = bentoBox.deposit(
                 params.tokenIn,
-                from,
+                address(this),
                 params.path[0].pool,
                 IERC20(params.tokenIn).balanceOf(address(this)),
                 0
@@ -36,8 +40,7 @@ abstract contract TridentSwapAdapter is ITridentRouter, ImmutableState, BentoAda
         if (amountOut < params.amountOutMinimum) revert TooLittleReceived();
     }
 
-    // todo
-    function complexPath(ComplexPathParams calldata params) public payable {
+    function _complexPath(ComplexPathParams memory params) internal {
         // Deposit all initial tokens to respective pools and initiate the swaps.
         // Input tokens come from the user - output goes to following pools.
         uint256 n = params.initialPath.length;

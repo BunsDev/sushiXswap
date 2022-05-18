@@ -181,9 +181,14 @@ contract SushiXSwap is
                     (ExactInputParams)
                 );
 
-                _exactInput(params, address(this));
+                _exactInput(params);
             } else if (action == TRIDENT_COMPLEX_PATH_SWAP) {
-                // todo
+                ComplexPathParams memory params = abi.decode(
+                    datas[i],
+                    (ComplexPathParams)
+                );
+
+                _complexPath(params);
             } else if (action == STARGATE_TELEPORT) {
                 (
                     TeleportParams memory params,

@@ -207,13 +207,13 @@ contract SushiXSwap is
                 _complexPath(params);
             } else if (action == ACTION_STARGATE_TELEPORT) {
                 (
-                    TeleportParams memory params,
+                    StargateTeleportParams memory params,
                     uint8[] memory actionsDST,
                     uint256[] memory valuesDST,
                     bytes[] memory datasDST
                 ) = abi.decode(
                         datas[i],
-                        (TeleportParams, uint8[], uint256[], bytes[])
+                        (StargateTeleportParams, uint8[], uint256[], bytes[])
                     );
 
                 _stargateTeleport(params, actionsDST, valuesDST, datasDST);

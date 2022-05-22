@@ -7,7 +7,7 @@ import "../interfaces/stargate/IStargateAdapter.sol";
 abstract contract StargateAdapter is ImmutableState, IStargateReceiver {
     using SafeERC20 for IERC20;
 
-    struct TeleportParams {
+    struct StargateTeleportParams {
         uint16 dstChainId;
         address token;
         uint256 srcPoolId;
@@ -25,7 +25,7 @@ abstract contract StargateAdapter is ImmutableState, IStargateReceiver {
     }
 
     function _stargateTeleport(
-        TeleportParams memory params,
+        StargateTeleportParams memory params,
         uint8[] memory actions,
         uint256[] memory values,
         bytes[] memory datas

@@ -4,6 +4,8 @@ pragma solidity 0.8.11;
 
 import "../interfaces/IImmutableState.sol";
 
+/// @title ImmutableState
+/// @notice Stores the immutable state
 abstract contract ImmutableState is IImmutableState {
     /// @notice BentoBox token vault
     IBentoBoxMinimal public immutable override bentoBox;

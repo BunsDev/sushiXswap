@@ -4,26 +4,40 @@ pragma solidity 0.8.11;
 
 import "../interfaces/stargate/IStargateAdapter.sol";
 
+/// @title StargateAdapter
+/// @notice Contains function used by Stargate Bridge
 abstract contract StargateAdapter is ImmutableState, IStargateReceiver {
     using SafeERC20 for IERC20;
 
+    // Custom Error
+    error NotStargateRouter();
+
     struct StargateTeleportParams {
-        uint16 dstChainId;
-        address token;
-        uint256 srcPoolId;
-        uint256 dstPoolId;
-        uint256 amount;
-        uint256 amountMin;
-        uint256 dustAmount;
-        address receiver;
-        address to;
-        uint256 gas;
+        uint16 dstChainId; // stargate dst chain id
+        address token; // token getting bridged
+        uint256 srcPoolId; // stargate src pool id
+        uint256 dstPoolId; // stargate dst pool id
+        uint256 amount; // amount to bridge
+        uint256 amountMin; // amount to bridge minimum
+        uint256 dustAmount; // native token to be received on dst chain
+        address receiver; // sushiXswap on dst chain
+        address to; // receiver bridge token incase of transaction reverts on dst chain
+        uint256 gas; // extra gas to be sent for dst chain operations
     }
 
+    /// @notice Approves token to the Stargate Router
+    /// @param token token to approve
     function approveToStargateRouter(IERC20 token) external {
         token.safeApprove(address(stargateRouter), type(uint256).max);
     }
 
+    /// @notice Bridges the token to dst chain using Stargate Router
+    /// @dev It is hardcoded to use all the contract balance. Only call this as the last step.
+    /// The refund address for extra fees sent it msg.sender.
+    /// @param params required by the Stargate, can be found at StargateTeleportParams struct.
+    /// @param actions An array with a sequence of actions to execute (see ACTION_ declarations).
+    /// @param values A one-to-one mapped array to `actions`. Native token amount to send along action.
+    /// @param datas A one-to-one mapped array to `actions`. Contains abi encoded data of function arguments.
     function _stargateTeleport(
         StargateTeleportParams memory params,
         uint8[] memory actions,
@@ -51,6 +65,10 @@ abstract contract StargateAdapter is ImmutableState, IStargateReceiver {
         );
     }
 
+    /// @notice Receiver function on dst chain
+    /// @param _token bridge token received
+    /// @param amountLD amount received
+    /// @param payload ABI-Encoded data received from src chain
     function sgReceive(
         uint16,
         bytes memory,
@@ -59,10 +77,7 @@ abstract contract StargateAdapter is ImmutableState, IStargateReceiver {
         uint256 amountLD,
         bytes memory payload
     ) external override {
-        require(
-            msg.sender == address(stargateRouter),
-            "Caller not Stargate Router"
-        );
+        if (msg.sender != address(stargateRouter)) revert NotStargateRouter();
 
         (
             address to,
@@ -71,12 +86,14 @@ abstract contract StargateAdapter is ImmutableState, IStargateReceiver {
             bytes[] memory datas
         ) = abi.decode(payload, (address, uint8[], uint256[], bytes[]));
 
+        /// @dev incase the actions fail, transfer bridge token to the to address
         try
             ISushiXSwap(payable(address(this))).cook(actions, values, datas)
         {} catch (bytes memory) {
             IERC20(_token).transfer(to, amountLD);
         }
 
+        /// @dev transfer any native token received as dust to the to address
         if (address(this).balance > 0)
             payable(to).transfer(address(this).balance);
     }

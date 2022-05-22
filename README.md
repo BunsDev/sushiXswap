@@ -1,6 +1,12 @@
-# HardHat Foundation
+# Sushi - X - Swap
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+Sushi - X - Swap enables cross chain transfers and swaps for the sushiswap. 
+
+It supports swaps from both Trident and Legacy AMM. 
+
+The bridging solution used is Stargate.
+
+User can choose to transfer or swap from both BentoBox or Wallet, or even both.
 
 ## Env
 

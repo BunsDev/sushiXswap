@@ -5,7 +5,7 @@ pragma solidity 0.8.11;
 import "../interfaces/stargate/IStargateAdapter.sol";
 
 /// @title StargateAdapter
-/// @notice Contains function used by Stargate Bridge
+/// @notice Adapter for function used by Stargate Bridge
 abstract contract StargateAdapter is ImmutableState, IStargateReceiver {
     using SafeERC20 for IERC20;
 
@@ -50,17 +50,17 @@ abstract contract StargateAdapter is ImmutableState, IStargateReceiver {
             params.dstChainId,
             params.srcPoolId,
             params.dstPoolId,
-            payable(msg.sender),
+            payable(msg.sender), // refund address
             params.amount != 0
                 ? params.amount
                 : IERC20(params.token).balanceOf(address(this)),
             params.amountMin,
             IStargateRouter.lzTxObj(
-                params.gas,
+                params.gas, // extra gas to be sent for dst execution
                 params.dustAmount,
                 abi.encodePacked(params.receiver)
             ),
-            abi.encodePacked(params.receiver),
+            abi.encodePacked(params.receiver), // sushiXswap on the dst chain
             payload
         );
     }

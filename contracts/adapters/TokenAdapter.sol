@@ -26,6 +26,18 @@ abstract contract TokenAdapter {
         }
     }
 
+    /// @notice Function to transfer tokens from user to the to address
+    /// @param token token to transfer
+    /// @param to receiver
+    /// @param amount amount to transfer
+    function _transferFromToken(
+        IERC20 token,
+        address to,
+        uint256 amount
+    ) internal {
+        token.safeTransferFrom(msg.sender, to, amount);
+    }
+
     /// @notice Unwraps the wrapper native into native and sends it to the receiver.
     /// @param token token to transfer
     /// @param to receiver

@@ -44,6 +44,8 @@ contract SushiXSwap is
     // Bridge Operations
     uint8 internal constant ACTION_STARGATE_TELEPORT = 10;
 
+    uint8 internal constant ACTION_SRC_TOKEN_TRANSFER = 11;
+
     /// @notice Executes a set of actions and allows composability (contract calls) to other contracts.
     /// @param actions An array with a sequence of actions to execute (see ACTION_ declarations).
     /// @param values A one-to-one mapped array to `actions`. Native token amount to send along action.
@@ -107,6 +109,13 @@ contract SushiXSwap is
                     share,
                     unwrapBento
                 );
+            } else if (action == ACTION_SRC_TOKEN_TRANSFER) {
+                (address token, address to, uint256 amount) = abi.decode(
+                    datas[i],
+                    (address, address, uint256)
+                );
+
+                _transferFromToken(IERC20(token), to, amount);
             } else if (action == ACTION_DST_DEPOSIT_TO_BENTOBOX) {
                 (address token, address to, uint256 amount, uint256 share) = abi
                     .decode(datas[i], (address, address, uint256, uint256));

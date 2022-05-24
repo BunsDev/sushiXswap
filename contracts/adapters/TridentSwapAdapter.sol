@@ -95,13 +95,22 @@ abstract contract TridentSwapAdapter is
             );
             if (balanceShares < params.output[i].minAmount)
                 revert TooLittleReceived();
-
-            bentoBox.transfer(
-                params.output[i].token,
-                address(this),
-                params.output[i].to,
-                balanceShares
-            );
+            if (params.output[i].unwrapBento) {
+                bentoBox.withdraw(
+                    params.output[i].token,
+                    address(this),
+                    params.output[i].to,
+                    0,
+                    balanceShares
+                );
+            } else {
+                bentoBox.transfer(
+                    params.output[i].token,
+                    address(this),
+                    params.output[i].to,
+                    balanceShares
+                );
+            }
         }
     }
 

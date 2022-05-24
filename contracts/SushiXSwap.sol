@@ -57,7 +57,7 @@ contract SushiXSwap is
         bytes[] memory datas
     ) public payable override {
         uint256 actionLength = actions.length;
-        for (uint256 i; i < actionLength; _increment(i)) {
+        for (uint256 i; i < actionLength; i = _increment(i)) {
             uint8 action = actions[i];
             // update for total amounts in contract?
             if (action == ACTION_MASTER_CONTRACT_APPROVAL) {

@@ -119,7 +119,7 @@ abstract contract StargateAdapter is ImmutableState, IStargateReceiver {
         try
             ISushiXSwap(payable(address(this))).cook(actions, values, datas)
         {} catch (bytes memory) {
-            IERC20(_token).transfer(to, amountLD);
+            IERC20(_token).safeTransfer(to, amountLD);
         }
 
         /// @dev transfer any native token received as dust to the to address

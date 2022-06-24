@@ -28,7 +28,11 @@ abstract contract TridentSwapAdapter is
             uint256 tokenBalance = IERC20(params.tokenIn).balanceOf(
                 address(this)
             );
-            _transferTokens(params.tokenIn, address(bentoBox), tokenBalance);
+            _transferTokens(
+                IERC20(params.tokenIn),
+                address(bentoBox),
+                tokenBalance
+            );
             // Pay the first pool directly.
             (, params.amountIn) = bentoBox.deposit(
                 params.tokenIn,

@@ -162,7 +162,8 @@ contract SushiXSwap is
                         (address, address, uint256, uint256, bool)
                     );
                 if (amount == 0) {
-                    amount = IERC20(token).balanceOf(address(this));
+                    uint256 shares = bentoBox.balanceOf(token, address(this));
+                    amount = bentoBox.toAmount(token, shares, false);
                 }
                 _transferFromBentoBox(
                     token,

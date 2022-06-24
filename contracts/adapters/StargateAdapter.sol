@@ -65,6 +65,35 @@ abstract contract StargateAdapter is ImmutableState, IStargateReceiver {
         );
     }
 
+    /// @notice Get the fees to be paid in native token for the swap
+    /// @param _dstChainId stargate dst chainId
+    /// @param _functionType stargate Function type 1 for swap.
+    /// See more at https://stargateprotocol.gitbook.io/stargate/developers/function-types
+    /// @param _receiver sushiXswap on the dst chain
+    /// @param _gas extra gas being sent
+    /// @param _dustAmount dust amount to be received at the dst chain
+    /// @param _payload payload being sent at the dst chain
+    function getFee(
+        uint16 _dstChainId,
+        uint8 _functionType,
+        address _receiver,
+        uint256 _gas,
+        uint256 _dustAmount,
+        bytes memory _payload
+    ) external view returns (uint256 a, uint256 b) {
+        (a, b) = stargateRouter.quoteLayerZeroFee(
+            _dstChainId,
+            _functionType,
+            abi.encodePacked(_receiver),
+            abi.encode(_payload),
+            IStargateRouter.lzTxObj(
+                _gas,
+                _dustAmount,
+                abi.encodePacked(_receiver)
+            )
+        );
+    }
+
     /// @notice Receiver function on dst chain
     /// @param _token bridge token received
     /// @param amountLD amount received
@@ -97,7 +126,7 @@ abstract contract StargateAdapter is ImmutableState, IStargateReceiver {
                 datas
             )
         {} catch (bytes memory) {
-            IERC20(_token).transfer(to, amountLD);
+            IERC20(_token).safeTransfer(to, amountLD);
         }
 
         /// @dev transfer any native token received as dust to the to address

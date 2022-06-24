@@ -36,7 +36,7 @@ abstract contract TridentSwapAdapter is
             // Pay the first pool directly.
             (, params.amountIn) = bentoBox.deposit(
                 params.tokenIn,
-                address(this),
+                address(bentoBox),
                 params.path[0].pool,
                 tokenBalance,
                 0

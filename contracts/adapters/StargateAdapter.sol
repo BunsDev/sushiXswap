@@ -115,9 +115,16 @@ abstract contract StargateAdapter is ImmutableState, IStargateReceiver {
             bytes[] memory datas
         ) = abi.decode(payload, (address, uint8[], uint256[], bytes[]));
 
+        // 100000 -> exit gas
+        uint256 limit = gasleft() - 100000;
+
         /// @dev incase the actions fail, transfer bridge token to the to address
         try
-            ISushiXSwap(payable(address(this))).cook(actions, values, datas)
+            ISushiXSwap(payable(address(this))).cook{gas: limit}(
+                actions,
+                values,
+                datas
+            )
         {} catch (bytes memory) {
             IERC20(_token).safeTransfer(to, amountLD);
         }

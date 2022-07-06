@@ -131,6 +131,6 @@ abstract contract StargateAdapter is ImmutableState, IStargateReceiver {
 
         /// @dev transfer any native token received as dust to the to address
         if (address(this).balance > 0)
-            payable(to).transfer(address(this).balance);
+            to.call{value: (address(this).balance)}("");
     }
 }

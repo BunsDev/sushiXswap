@@ -115,8 +115,8 @@ abstract contract StargateAdapter is ImmutableState, IStargateReceiver {
             bytes[] memory datas
         ) = abi.decode(payload, (address, uint8[], uint256[], bytes[]));
 
-        // 50000 -> exit gas (tbd)
-        uint256 limit = gasleft() - 50000;
+        // 100000 -> exit gas
+        uint256 limit = gasleft() - 100000;
 
         /// @dev incase the actions fail, transfer bridge token to the to address
         try
